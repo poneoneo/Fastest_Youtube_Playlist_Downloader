@@ -1,26 +1,33 @@
-from async_property.cached import AsyncCachedPropertyDescriptor
+# from async_property.cached import AsyncCachedPropertyDescriptor
 from pytube import YouTube, Playlist, Stream, StreamQuery
 from utils import retry_if_error, get_playlist_path
-from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional,Any
 import asyncio
 import aiohttp
 import time
 import os
 import argparse
-# from aiohttp import ClientConnectorError, ClientOSError, ClientPayloadError, ClientSession, ServerDisconnectedError
-# from async_pytube 
-# import logging
-DEFAULT_PLAYLIST_PATH = "D:/Telechargement/Youtube_Playlist_Downloader"
 
+DEFAULT_PLAYLIST_PATH:str= "Youtube_Playlist_Downloader/"
 
 # permet de suivre l'avancement du telechargement en pourcentage(%)
 async def see_percentage_downloaded(stream: Stream, chunk: bytes,
                                     bytes_remaining: int):
+    # print(chunk)
+    """This function will display the current progression of each stream as soon as he write 
+        a chunk on disk. 
+
+    :param stream: an instance of stream chosen ( 720p by default)
+    :type stream: Stream
+    :param chunk: amount of bytes already wrote on the disk 
+    :type chunk: bytes
+    :param bytes_remaining: amount of bytes remainning to download
+    :type bytes_remaining: int
+    """
     stream_size = await stream.filesize # type: ignore
     total_downloaded = bytes_remaining
     percentage_downloaded = total_downloaded / stream_size * 100
-    # os.system('cls')
+    os.system('cls')
     print(
         f"{stream.title} telechargee a {int(percentage_downloaded)} %  {int(total_downloaded / 2 ** 20)}Mb/{int(stream_size / 2 ** 20)}Mb")
 
@@ -43,8 +50,7 @@ async def download_video(stms: StreamQuery, pl: Playlist, video: YouTube):
     """
     
     # enregistre la fonction qui doit indiquer le niveau de progression de chaque video de la playlist
-    video.register_on_progress_callback(see_percentage_downloaded) # type: ignore
-    playlist_title: str = await pl.title #type:ignore
+    video.register_on_progress_callback(see_percentage_downloaded)  # type: ignore
     choosen_stream: Optional[Stream] = stms.filter(progressive=True, res="720p").first()
     print(choosen_stream)
     if choosen_stream is not None:
@@ -66,9 +72,9 @@ async def create_youtube_list(pl: Playlist, session:aiohttp.ClientSession,*args,
     print("Construction de la youtube list")
     final_list:List[YouTube] = []
     counter = 0
-    if args:
+    if args and args[0] != None:
         stop_at = args[0]
-        async for url in  pl.video_urls():  # type: ignore
+        async for url in  pl.video_urls():   # type: ignore
             final_list.append(YouTube(url,session=session ))
             counter += 1
             if counter == stop_at:
@@ -81,7 +87,6 @@ async def create_youtube_list(pl: Playlist, session:aiohttp.ClientSession,*args,
         print("Construction Terminee")
         return final_list
         
-
 
 
 @retry_if_error()
@@ -100,16 +105,21 @@ async def create_task_container(yt_list: List[YouTube], pl: Playlist):
     return downloader_tasks_list
 
 
-async def amount_of_videos_in_playlist(pl:Playlist):
-    amount = 0 
-    async for url in pl.video_urls():  # type: ignore
-        amount+=1
-    return amount
+# async def amount_of_videos_in_playlist(pl:Playlist):
+#     amount = 0 
+#     async for url in pl.video_urls():  # type: ignore
+#         amount+=1
+#     return amount
     
-async def main():
+async def main(url:str, stop_at:int|None = None):
+    """Get playlist url to download from and the amount of videos to select in this playlist
+
+    :param url: playlist url 
+    :type url: str
+    :param stop_at: how many videos the script should select in playlist
+    :type stop_at: int
+    """
     # create playlist objects 
-    url = input("paste your url here:")
-    start = time.perf_counter()
     pl = Playlist(f"{url}", )
     print(await pl.title)  # type: ignore
     print(f"{await pl.length} Videos", )  # type: ignore
@@ -124,8 +134,12 @@ async def main():
             dt.cancel()
     # tasks_list = await tasks_list_container_task
     # done,pending = await  asyncio.wait(tasks_list)
-    print(f"all those videos took : {time.perf_counter() - start} s")
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    playlist_url :str  = input("Paste your playlist url:")
+    stop_at: int = int(input("How many videos did you want to download from your playlist:"))
+    
+    start = time.perf_counter()
+    asyncio.run(main(url=playlist_url,stop_at=stop_at))
+    print(f"all those videos took : {time.perf_counter() - start} s")
 
