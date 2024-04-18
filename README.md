@@ -35,7 +35,7 @@ To download your playlist with this script just follow instructions bellow:
 
 * paste your link in the terminal when the script will asking to do it.
 
-* tell the amount of videos that you want to download. so if you only want the two first videos of your playlist you just have to enter "2".
+* tell the amount of videos that you want to download. so if you only want the two first videos of your playlist you just have to enter "2". If you want to download th entire playlist then just press `Enter`
 
 * By default the script will create a `Youtube_Playlist_Downloader` folder in the current directory but you can change it by setting the `DEFAULT_PLAYLIST_PATH` variable at the top of the script.
 
