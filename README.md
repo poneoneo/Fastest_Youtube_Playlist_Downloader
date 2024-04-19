@@ -15,19 +15,34 @@ YouTube is the most popular video-sharing platform in the world and as a hacker
 you may encounter a situation where you want to script something to download not only single video but an entire playlist. For this I present you 720p Playlist Downloader. 
 
 ### Installation
-Pytube requires an installation of python 3.6 or greater, as well as pip.
-Pip is typically bundled with python installations, and you can find options for how to install python at https://python.org.
+This project is based on pytube-async itself written on [pytube](https://pytube.io/en/latest/) which is the reference python library for downloading youtube videos however it did not have an API to write asynchronous programs. For the specific needs of this script I had to fork the original [**pytube-async**](https://github.com/msemple1111/pytube-async) project to add functionality like:
 
+* Save the progress of downloading each video in the playlist so as not to have to start from the beginning if an error occurs
 
-To install from source with pip:
+* Display real-time progress of the download of each video in percentage
+
+for the script to work properly you must follow the following instructions
+
+Create virtual env :
+```bash
+$ python -m venv your_virtualenv_name
+```
+Activate your virtual env :
+```bash
+$ your_virtualenv_name\\Scripts\\activate
+```
+on Linux :
+```bash
+$ source your_virtualenv_name/bin/activate
+```
+The install the only one dependency :
 
 ```bash
 $ python -m pip install git+https://github.com/poneoneo/pytube-async@allow_resume_when_downloading_crash_aiofile_depency_removed#egg=pytube
 ```
-
-on windows, open cmd.exe and run:
+Run the script and enjoy your downloading:
 ```bash
-py -m pip install git+https://github.com/poneoneo/pytube-async@allow_resume_when_downloading_crash_aiofile_depency_removed#egg=pytube
+$ python main.py
 ```
 
 ### Using 720p Youtube Playlist Downloader
