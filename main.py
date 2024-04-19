@@ -1,5 +1,6 @@
 # from async_property.cached import AsyncCachedPropertyDescriptor
 from pytube import YouTube, Playlist, Stream, StreamQuery
+from pytube.extract import playlist_id
 from utils import retry_if_error, get_playlist_path
 from typing import List, Optional,Any
 import asyncio
@@ -134,12 +135,25 @@ async def main(url:str, stop_at:int|None = None):
             dt.cancel()
     # tasks_list = await tasks_list_container_task
     # done,pending = await  asyncio.wait(tasks_list)
+ 
+def check_arguments():
+    try :
+        playlist_url :str  = input("Paste your playlist url:")
+        playlist_id(playlist_url)
+        stop_at: int = int(input("How many videos did you want to download from your playlist:"))
+    except ValueError as e :
+        print(f"\n You should enter an Integer Value:{e}".upper())
+        return None
+    except KeyError as e:
+        print(f"Your url must to be an valid playlist url try again".upper())
+        return None
+    return playlist_url,stop_at
 
-if __name__ == '__main__':
-    playlist_url :str  = input("Paste your playlist url:")
-    stop_at: int = int(input("How many videos did you want to download from your playlist:"))
-    
-    start = time.perf_counter()
-    asyncio.run(main(url=playlist_url,stop_at=stop_at))
-    print(f"all those videos took : {time.perf_counter() - start} s")
+
+if __name__ == '__main__': 
+    result = check_arguments()
+    if result is not None:
+        start = time.perf_counter()
+        asyncio.run(main(url=result[0],stop_at=result[1]))
+        print(f"all those videos took : {time.perf_counter() - start} s".upper())
 

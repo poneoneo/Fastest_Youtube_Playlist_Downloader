@@ -41,6 +41,11 @@ def retry_if_error(retries=5):
                     if e is None or e == "":
                         print("Asyncio Timeout Error")
                     continue
+                except FileNotFoundError as e:
+                    print(f"You Must to create your default path :{e}")
+                    error = False
+                    raise FileNotFoundError from e
+
                 else:
                     error = False
 
