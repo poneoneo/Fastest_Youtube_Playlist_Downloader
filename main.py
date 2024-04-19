@@ -28,7 +28,7 @@ async def see_percentage_downloaded(stream: Stream, chunk: bytes,
     stream_size = await stream.filesize # type: ignore
     total_downloaded = bytes_remaining
     percentage_downloaded = total_downloaded / stream_size * 100
-    os.system('cls')
+    # os.system('cls')
     print(
         f"{stream.title} telechargee a {int(percentage_downloaded)} %  {int(total_downloaded / 2 ** 20)}Mb/{int(stream_size / 2 ** 20)}Mb")
 
