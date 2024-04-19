@@ -1,6 +1,6 @@
-.env/
 .idea/
 __pycache__/
+downloader/
 Pipfile
 Pipfile.lock
 
