@@ -49,7 +49,6 @@ async def download_video(stms: StreamQuery, pl: Playlist, video: YouTube):
             Une instance de la classe :class: Youtube `<Youtube>`
 
     """
-    
     # enregistre la fonction qui doit indiquer le niveau de progression de chaque video de la playlist
     video.register_on_progress_callback(see_percentage_downloaded)  # type: ignore
     choosen_stream: Optional[Stream] = stms.filter(progressive=True, res="720p").first()
@@ -126,7 +125,7 @@ async def main(url:str, stop_at:int|None = None):
     print(f"{await pl.length} Videos", )  # type: ignore
     # amount = await amount_of_videos_in_playlist(pl)
     async with aiohttp.ClientSession() as session:
-        youtube_list = await create_youtube_list(pl,session)
+        youtube_list = await create_youtube_list(pl,session,[stop_at])
         # youtube_list = await youtube_list_task
         tasks_list = await create_task_container(youtube_list, pl)
         dt = asyncio.gather(*tasks_list, return_exceptions=False)
