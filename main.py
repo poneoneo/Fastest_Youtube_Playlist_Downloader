@@ -74,17 +74,21 @@ async def create_youtube_list(pl: Playlist, session:aiohttp.ClientSession,*args,
     counter = 0
     if args and args[0] != None:
         stop_at = args[0]
+        print(stop_at)
         async for url in  pl.video_urls():   # type: ignore
             final_list.append(YouTube(url,session=session ))
             counter += 1
+            # print(counter)
             if counter == stop_at:
                 break
+        print("selected")
         print("Construction Terminee")
         return final_list
     else:
         async for url in  pl.video_urls():  # type: ignore
             final_list.append(YouTube(url, ))
         print("Construction Terminee")
+        print("not selected")
         return final_list
         
 
@@ -104,14 +108,8 @@ async def create_task_container(yt_list: List[YouTube], pl: Playlist):
         downloader_tasks_list.append(asyncio.create_task(download_video(streams, pl, video)))
     return downloader_tasks_list
 
-
-# async def amount_of_videos_in_playlist(pl:Playlist):
-#     amount = 0 
-#     async for url in pl.video_urls():  # type: ignore
-#         amount+=1
-#     return amount
     
-async def main(url:str, stop_at:int|None = None):
+async def main(url:str, stop_at:str|int|None = None):
     """Get playlist url to download from and the amount of videos to select in this playlist
 
     :param url: playlist url 
@@ -125,7 +123,7 @@ async def main(url:str, stop_at:int|None = None):
     print(f"{await pl.length} Videos", )  # type: ignore
     # amount = await amount_of_videos_in_playlist(pl)
     async with aiohttp.ClientSession() as session:
-        youtube_list = await create_youtube_list(pl,session,[stop_at])
+        youtube_list = await create_youtube_list(pl,session,stop_at)
         # youtube_list = await youtube_list_task
         tasks_list = await create_task_container(youtube_list, pl)
         dt = asyncio.gather(*tasks_list, return_exceptions=False)
@@ -139,7 +137,14 @@ def check_arguments():
     try :
         playlist_url :str  = input("Paste your playlist url:")
         playlist_id(playlist_url)
-        stop_at: int = int(input("How many videos did you want to download from your playlist:"))
+        stop_at: str|int|None = input("How many videos did you want to download from your playlist:")
+        if stop_at.isnumeric():
+            stop_at = int(stop_at)
+        elif stop_at == "":
+            stop_at = None
+        else:
+            int(stop_at)
+
     except ValueError as e :
         print(f"\n You should enter an Integer Value:{e}".upper())
         return None
@@ -147,7 +152,6 @@ def check_arguments():
         print(f"Your url must to be an valid playlist url try again".upper())
         return None
     return playlist_url,stop_at
-
 
 if __name__ == '__main__': 
     result = check_arguments()
